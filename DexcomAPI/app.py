@@ -11,7 +11,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from defs import get_dexcom_connection, get_sender_email_credentials, get_receiver_email, get_database_connection
 from stat_functions import verbose_message_mgdl, verbose_message_mmol, concise_message_mdgl, concise_message_mmol
-# from database import insert_glucose_readings
+# from database import insert_glucose_readings.
 
 app = Flask(__name__)
 
