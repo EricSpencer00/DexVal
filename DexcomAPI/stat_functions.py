@@ -12,10 +12,10 @@ median_glucose_mgdl = None
 median_glucose_mmol = None
 stdev_glucose_mgdl = None
 stdev_glucose_mmol = None
-high_mgdl = None
-low_mgdl = None
-high_mmol = None
-low_mmol = None
+high_mgdl = 180 # Default high glucose level
+low_mgdl = 70 # Default low glucose level
+high_mmol = 8.3 # Default high glucose level
+low_mmol = 3.9 # Default low glucose level
 min_glucose_mgdl = None
 min_glucose_mmol = None
 max_glucose_mgdl = None
@@ -25,21 +25,24 @@ glucose_range_mmol = None
 coef_variation_percentage = None
 glycemic_variability_index = None
 
-def set_high_mgdl(dexcom):
+def update_value(variable_name, new_value):
+    globals()[variable_name] = new_value
+
+def set_high_mgdl(dexcom, value):
     global high_mgdl
-    high_mgdl = 180
+    high_mgdl = value
 
-def set_low_mgdl(dexcom):
+def set_low_mgdl(dexcom, value):
     global low_mgdl
-    low_mgdl = 70
+    low_mgdl = value
 
-def set_high_mmol(dexcom):
+def set_high_mmol(dexcom, value):
     global high_mmol
-    high_mmol = 8.3
+    high_mmol = value
 
-def set_low_mmol(dexcom):
+def set_low_mmol(dexcom, value):
     global low_mmol
-    low_mmol = 3.9
+    low_mmol = value
 
 def get_current_trend_arrow(dexcom):
     glucose_reading = dexcom.get_current_glucose_reading()
@@ -154,7 +157,7 @@ def verbose_message_mgdl(dexcom):
     glucose_graph = dexcom.get_glucose_readings(minutes=1440, max_count=288) # glucose graph
     glucose_values = [reading.value for reading in glucose_graph] # get_glucose_values
 
-    glucose_state = "Low" if glucose_value < 70 else "High" if glucose_value > 150 else "In Range" # get_glucose_state_mdgl
+    glucose_state = "Low" if glucose_value < low_mgdl else "High" if glucose_value > high_mgdl else "In Range" # get_glucose_state_mdgl
 
     average_glucose_mgdl = round(statistics.mean(glucose_values), 4)
     median_glucose_mgdl = round(statistics.median(glucose_values), 4)
@@ -163,13 +166,13 @@ def verbose_message_mgdl(dexcom):
     max_glucose_mgdl = max(glucose_values)
     glucose_range_mgdl = int((max_glucose_mgdl - min_glucose_mgdl) * 100) / 100
 
-    in_range_glucose = [g for g in glucose_values if 70 <= g <= 150]
+    in_range_glucose = [g for g in glucose_values if low_mgdl <= g <= high_mgdl]
     time_in_range_percentage = round((len(in_range_glucose) / len(glucose_values)) * 100, 4)
 
-    mgdl_above_180 = sum(reading - 180 for reading in glucose_values if reading > 180)
-    mgdl_below_70 = sum(70 - reading for reading in glucose_values if reading < 70)
-    total_area = (max_glucose_mgdl - 180) * time_in_range_percentage / 100 + mgdl_above_180 + mgdl_below_70
-    glycemic_variability_index = ((mgdl_above_180 + mgdl_below_70) / total_area) * 100
+    mgdl_above_high = sum(reading - high_mgdl for reading in glucose_values if reading > high_mgdl)
+    mgdl_below_low = sum(low_mgdl - reading for reading in glucose_values if reading < low_mgdl)
+    total_area = (max_glucose_mgdl - high_mgdl) * time_in_range_percentage / 100 + mgdl_above_high + mgdl_below_low
+    glycemic_variability_index = ((mgdl_above_high + mgdl_below_low) / total_area) * 100
 
     average_glucose_mmol = round(average_glucose_mgdl / 18.01559, 4)
     estimated_a1c = round((28.7 * average_glucose_mmol + 46.7) / 28.7, 4)
@@ -186,7 +189,8 @@ def verbose_message_mgdl(dexcom):
                    f"Maximum Glucose: {max_glucose_mgdl} mg/dL\n" \
                    f"Glucose Range: {glucose_range_mgdl} mg/dL\n" \
                    f"Coef. of Variation: {round((stdev_glucose_mgdl / average_glucose_mgdl) * 100, 4)}%\n" \
-                   f"Glycemic Variability Index: {glycemic_variability_index}%"
+                   f"Glycemic Variability Index: {glycemic_variability_index}%" \
+                   f"Time in Range (70-150 mg/dL): {time_in_range_percentage:.2f}%\n"
 
     return message_body
 
@@ -200,7 +204,7 @@ def verbose_message_mmol(dexcom):
     glucose_values_mmol = [round(value / 18.01559, 1) for value in glucose_values]
     glucose_value_mmol = round(glucose_value / 18.01559, 1)
 
-    glucose_state = "Low" if glucose_value_mmol < 3.9 else "High" if glucose_value_mmol > 8.3 else "In Range"
+    glucose_state = "Low" if glucose_value_mmol < low_mmol else "High" if glucose_value_mmol > high_mmol else "In Range"
 
     average_glucose_mmol = round(statistics.mean(glucose_values_mmol), 1)
     median_glucose_mmol = round(statistics.median(glucose_values_mmol), 1)
@@ -212,10 +216,10 @@ def verbose_message_mmol(dexcom):
     in_range_glucose = [g for g in glucose_values_mmol if 3.9 <= g <= 8.3]
     time_in_range_percentage = round((len(in_range_glucose) / len(glucose_values_mmol)) * 100, 1)
 
-    mgdl_above_180 = sum(reading - 180 / 18.01559 for reading in glucose_values_mmol if reading > 10)
-    mgdl_below_70 = sum(10 - reading for reading in glucose_values_mmol if reading < 3.9)
-    total_area = (max_glucose_mmol - 10) * time_in_range_percentage / 100 + mgdl_above_180 + mgdl_below_70
-    glycemic_variability_index = ((mgdl_above_180 + mgdl_below_70) / total_area) * 100
+    mmol_above_high = sum(reading - high_mmol / 18.01559 for reading in glucose_values_mmol if reading > high_mmol)
+    mmol_below_low = sum(low_mmol - reading for reading in glucose_values_mmol if reading < low_mmol)
+    total_area = (max_glucose_mmol - high_mmol) * time_in_range_percentage / 100 + mmol_above_high + mmol_below_low
+    glycemic_variability_index = ((mmol_above_high + mmol_below_low) / total_area) * 100
 
     # Use ADAG formula to estimate A1C
     estimated_a1c = round((28.7 * average_glucose_mmol + 46.7) / 28.7, 1)
@@ -232,7 +236,8 @@ def verbose_message_mmol(dexcom):
                    f"Maximum Glucose: {max_glucose_mmol} mmol/L\n" \
                    f"Glucose Range: {glucose_range_mmol} mmol/L\n" \
                    f"Coef. of Variation: {round((stdev_glucose_mmol / average_glucose_mmol) * 100, 1)}%\n" \
-                   f"Glycemic Variability Index: {glycemic_variability_index}%"
+                   f"Glycemic Variability Index: {glycemic_variability_index}%" \
+                   f"Time in Range (3.9-8.3 mmol/L): {time_in_range_percentage:.1f}%\n"
 
     return message_body
 
@@ -246,3 +251,26 @@ def concise_message_mmol(dexcom):
     glucose_reading_mmol = round(glucose_reading.value / 18.01559, 1)
     trend = glucose_reading.trend_description
     return f"{glucose_reading_mmol} mmol/L and {trend}"
+
+def generate_bit_board(dexcom, height=5, width=20):
+    # Normalize values to fit within the height of the bit board
+    values = dexcom.get_glucose_readings(minutes=1440, max_count=width)
+    values = [reading.value for reading in values]
+    
+    max_value = max(values) if values else 1
+    min_value = min(values) if values else 0
+    value_range = max_value - min_value if max_value != min_value else 1
+    normalized_values = [(v - min_value) / value_range * (height - 1) for v in values]
+    
+    # Create an empty board
+    board = [[' ' for _ in range(width)] for _ in range(height)]
+    
+    # Place 'x' on the board according to normalized values
+    for i, value in enumerate(normalized_values):
+        if i < width:
+            row = height - 1 - int(value)
+            board[row][i] = 'x'
+    
+    # Print the board
+    for row in board:
+        print(''.join(row))
