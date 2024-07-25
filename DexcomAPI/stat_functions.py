@@ -1,3 +1,4 @@
+#stat_functions.py
 import statistics
 
 current_glucose_mgdl = None
@@ -75,12 +76,22 @@ def get_glucose_values(dexcom):
 
 def get_glucose_state_mdgl(dexcom):
     glucose_value = get_current_value_mdgl(dexcom)
-    glucose_state = "Low" if glucose_value < low_mgdl else "High" if glucose_value > high_mgdl else "In Range"
+    if glucose_value < low_mgdl:
+        glucose_state = "Low"   
+    elif glucose_value > high_mgdl:
+        glucose_state = "High"
+    else:
+        glucose_state = "In Range"
     return glucose_state
 
 def get_glucose_state_mmol(dexcom):
     glucose_value = get_current_value_mmol(dexcom)
-    glucose_state = "Low" if glucose_value < low_mmol else "High" if glucose_value > high_mmol else "In Range"
+    if glucose_value < low_mmol:
+        glucose_state = "Low"
+    elif glucose_value > high_mmol:
+        glucose_state = "High"
+    else:
+        glucose_state = "In Range"
     return glucose_state
 
 def get_average_glucose_mgdl(dexcom):
@@ -256,7 +267,7 @@ def generate_bit_board(dexcom, height=5, width=20):
     # Normalize values to fit within the height of the bit board
     values = dexcom.get_glucose_readings(minutes=1440, max_count=width)
     values = [reading.value for reading in values]
-    
+
     max_value = max(values) if values else 1
     min_value = min(values) if values else 0
     value_range = max_value - min_value if max_value != min_value else 1
