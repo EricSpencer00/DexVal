@@ -1,5 +1,8 @@
 #stat_functions.py
 import statistics
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 current_glucose_mgdl = None
 current_glucose_mmol = None
@@ -56,14 +59,32 @@ def get_current_trend_description(dexcom):
     return trend_description
 
 def get_current_value_mdgl(dexcom):
-    glucose_reading = dexcom.get_current_glucose_reading()
-    glucose_value = glucose_reading.value
-    return glucose_value
+    try:
+        glucose_reading = dexcom.get_current_glucose_reading()
+        if not glucose_reading:
+            logging.error("Failed to get glucose reading.")
+            return None
+        
+        glucose_value = glucose_reading.value
+        logging.debug(f"Glucose reading value: {glucose_value}")
+        return glucose_value
+    except Exception as e:
+        logging.error(f"An error occurred while getting current glucose value: {e}")
+        return None
 
 def get_current_value_mmol(dexcom):
-    glucose_reading = dexcom.get_current_glucose_reading()
-    glucose_value = glucose_reading.mmol
-    return glucose_value
+    try:
+        glucose_reading = dexcom.get_current_glucose_reading()
+        if glucose_reading is None:
+            logging.error("Failed to get glucose reading.")
+            return None
+        
+        glucose_value = glucose_reading.mmol
+        logging.debug(f"Glucose reading value (mmol/L): {glucose_value}")
+        return glucose_value
+    except Exception as e:
+        logging.error(f"An error occurred while getting current glucose value (mmol/L): {e}")
+        return None
 
 def get_glucose_graph(dexcom):
     glucose_graph = dexcom.get_glucose_readings(minutes=1440, max_count=288)
@@ -75,24 +96,36 @@ def get_glucose_values(dexcom):
     return glucose_values
 
 def get_glucose_state_mdgl(dexcom):
-    glucose_value = get_current_value_mdgl(dexcom)
-    if glucose_value < low_mgdl:
-        glucose_state = "Low"   
-    elif glucose_value > high_mgdl:
-        glucose_state = "High"
-    else:
-        glucose_state = "In Range"
-    return glucose_state
+    try:
+        glucose_value = get_current_value_mdgl(dexcom)
+        if glucose_value is None:
+            return "Unknown"
+        
+        if glucose_value < low_mgdl:
+            return "Low"
+        elif glucose_value > high_mgdl:
+            return "High"
+        else:
+            return "In Range"
+    except Exception as e:
+        logging.error(f"An error occurred while determining glucose state (mg/dL): {e}")
+        return "Unknown"
 
 def get_glucose_state_mmol(dexcom):
-    glucose_value = get_current_value_mmol(dexcom)
-    if glucose_value < low_mmol:
-        glucose_state = "Low"
-    elif glucose_value > high_mmol:
-        glucose_state = "High"
-    else:
-        glucose_state = "In Range"
-    return glucose_state
+    try:
+        glucose_value = get_current_value_mmol(dexcom)
+        if glucose_value is None:
+            return "Unknown"
+        
+        if glucose_value < low_mmol:
+            return "Low"
+        elif glucose_value > high_mmol:
+            return "High"
+        else:
+            return "In Range"
+    except Exception as e:
+        logging.error(f"An error occurred while determining glucose state (mmol/L): {e}")
+        return "Unknown"
 
 def get_average_glucose_mgdl(dexcom):
     glucose_values = get_glucose_values(dexcom)

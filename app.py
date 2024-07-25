@@ -11,26 +11,26 @@ dexcom = defs.get_dexcom_connection()
 @app.route('/')
 def index():
     # Get current glucose data
-    current_glucose_mgdl = stats.get_current_value_mdgl(dexcom)
-    current_glucose_mmol = stats.get_current_value_mmol(dexcom)
-    glucose_state_mdgl = stats.get_glucose_state_mdgl(dexcom)
-    glucose_state_mmol = stats.get_glucose_state_mmol(dexcom)
-    average_glucose_mgdl = stats.get_average_glucose_mgdl(dexcom)
-    average_glucose_mmol = stats.get_average_glucose_mmol(dexcom)
-    median_glucose_mgdl = stats.get_median_glucose_mgdl(dexcom)
-    median_glucose_mmol = stats.get_median_glucose_mmol(dexcom)
-    stdev_glucose_mgdl = stats.get_stdev_glucose_mgdl(dexcom)
-    stdev_glucose_mmol = stats.get_stdev_glucose_mmol(dexcom)
-    min_glucose_mgdl = stats.get_min_glucose_mgdl(dexcom)
-    min_glucose_mmol = stats.get_min_glucose_mmol(dexcom)
-    max_glucose_mgdl = stats.get_max_glucose_mgdl(dexcom)
-    max_glucose_mmol = stats.get_max_glucose_mmol(dexcom)
-    glucose_range_mgdl = stats.get_glucose_range_mgdl(dexcom)
-    glucose_range_mmol = stats.get_glucose_range_mmol(dexcom)
-    coef_variation_percentage = stats.get_coef_variation_percentage(dexcom)
-    glycemic_variability_index = stats.get_glycemic_variability_index(dexcom)
-    estimated_a1c = stats.get_estimated_a1c(dexcom)
-    time_in_range_percentage = stats.time_in_range_percentage
+    current_glucose_mgdl = stats.get_current_value_mdgl(dexcom) or 'N/A'
+    current_glucose_mmol = stats.get_current_value_mmol(dexcom) or 'N/A'
+    glucose_state_mdgl = stats.get_glucose_state_mdgl(dexcom) or 'N/A'
+    glucose_state_mmol = stats.get_glucose_state_mmol(dexcom) or 'N/A'
+    average_glucose_mgdl = stats.get_average_glucose_mgdl(dexcom) or 'N/A'
+    average_glucose_mmol = stats.get_average_glucose_mmol(dexcom) or 'N/A'
+    median_glucose_mgdl = stats.get_median_glucose_mgdl(dexcom) or 'N/A'
+    median_glucose_mmol = stats.get_median_glucose_mmol(dexcom) or 'N/A'
+    stdev_glucose_mgdl = stats.get_stdev_glucose_mgdl(dexcom) or 'N/A'
+    stdev_glucose_mmol = stats.get_stdev_glucose_mmol(dexcom) or 'N/A'
+    min_glucose_mgdl = stats.get_min_glucose_mgdl(dexcom) or 'N/A'
+    min_glucose_mmol = stats.get_min_glucose_mmol(dexcom) or 'N/A'
+    max_glucose_mgdl = stats.get_max_glucose_mgdl(dexcom) or 'N/A'
+    max_glucose_mmol = stats.get_max_glucose_mmol(dexcom) or 'N/A'
+    glucose_range_mgdl = stats.get_glucose_range_mgdl(dexcom) or 'N/A'
+    glucose_range_mmol = stats.get_glucose_range_mmol(dexcom) or 'N/A'
+    coef_variation_percentage = stats.get_coef_variation_percentage(dexcom) or 'N/A'
+    glycemic_variability_index = stats.get_glycemic_variability_index(dexcom) or 'N/A'
+    estimated_a1c = stats.get_estimated_a1c(dexcom) or 'N/A'
+    time_in_range_percentage = stats.time_in_range_percentage or 'N/A' 
 
     # Render template with the glucose data
     return render_template('index.html', 
