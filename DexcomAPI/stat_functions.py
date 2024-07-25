@@ -12,6 +12,10 @@ median_glucose_mgdl = None
 median_glucose_mmol = None
 stdev_glucose_mgdl = None
 stdev_glucose_mmol = None
+high_mgdl = None
+low_mgdl = None
+high_mmol = None
+low_mmol = None
 min_glucose_mgdl = None
 min_glucose_mmol = None
 max_glucose_mgdl = None
@@ -20,6 +24,22 @@ glucose_range_mgdl = None
 glucose_range_mmol = None
 coef_variation_percentage = None
 glycemic_variability_index = None
+
+def set_high_mgdl(dexcom):
+    global high_mgdl
+    high_mgdl = 180
+
+def set_low_mgdl(dexcom):
+    global low_mgdl
+    low_mgdl = 70
+
+def set_high_mmol(dexcom):
+    global high_mmol
+    high_mmol = 8.3
+
+def set_low_mmol(dexcom):
+    global low_mmol
+    low_mmol = 3.9
 
 def get_current_trend_arrow(dexcom):
     glucose_reading = dexcom.get_current_glucose_reading()
@@ -52,12 +72,12 @@ def get_glucose_values(dexcom):
 
 def get_glucose_state_mdgl(dexcom):
     glucose_value = get_current_value_mdgl(dexcom)
-    glucose_state = "Low" if glucose_value < 70 else "High" if glucose_value > 150 else "In Range"
+    glucose_state = "Low" if glucose_value < low_mgdl else "High" if glucose_value > high_mgdl else "In Range"
     return glucose_state
 
 def get_glucose_state_mmol(dexcom):
     glucose_value = get_current_value_mmol(dexcom)
-    glucose_state = "Low" if glucose_value < 3.9 else "High" if glucose_value > 8.3 else "In Range"
+    glucose_state = "Low" if glucose_value < low_mmol else "High" if glucose_value > high_mmol else "In Range"
     return glucose_state
 
 def get_average_glucose_mgdl(dexcom):
