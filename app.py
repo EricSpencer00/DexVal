@@ -1,13 +1,12 @@
 from flask import Flask
 from flask import render_template
-import DexcomAPI.stat_functions as stats
-from DexcomAPI.defs import get_dexcom_connection
-from pydexcom import Dexcom
+from flask import Flask, render_template
+from DexcomAPI import defs, stat_functions as stats
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='DexcomAPI')
 
 # Initialize Dexcom object with appropriate credentials
-dexcom = get_dexcom_connection()
+dexcom = defs.get_dexcom_connection()
 
 @app.route('/')
 def index():
