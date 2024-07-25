@@ -98,11 +98,6 @@ Predicting future glucose levels...
 ```
 This information is based solely on data, and does not incorporate factors like insulin/carb correction. It's a good predictor of what would happen to you if you didn't do anything based on your current trends. The program takes the 20 previous points and predicts the next readings based on linear regression.
 
-
-## Notes
-* I'm not going to claim that lstm works, tinkering around and will delete if I cannot find solution.
-* Arima can also be a bit wonky, slope.py is your best bet for prediction.
-
 ## Background information
 
 Being a Type 1 Diabetic, a CGM is necessary for my day to day life. 
