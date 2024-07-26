@@ -14,17 +14,17 @@ def insert_glucose_readings(dexcom, db, db_name):
 
     latest_timestamp = get_latest_timestamp(cursor, db_name)
 
-    glucose_readings = dexcom.get_glucose_readings(minutes=1440, max_count=288)
+    glucose_readings = dexcom.get_glucose_readings(minutes = 1440, max_count = 288)
 
     insert_data = []
 
     now = datetime.datetime.now()
     base_minute = now.minute - (now.minute % 5)
-    base_timestamp = now.replace(minute=base_minute, second=0, microsecond=0)
+    base_timestamp = now.replace(minute = base_minute, second = 0, microsecond = 0)
 
     for index in reversed(range(len(glucose_readings))):
         reading = glucose_readings[index]
-        timestamp = base_timestamp - datetime.timedelta(minutes=index * 5)
+        timestamp = base_timestamp - datetime.timedelta(minutes = index * 5)
 
         # Ensure timestamps will not overlap and duplicate data in table
         if latest_timestamp is None or timestamp > latest_timestamp:
