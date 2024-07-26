@@ -2,10 +2,6 @@
 # make sure you are in the correct Database
 
 import datetime
-import mysql.connector
-import pydexcom
-import os
-from defs import get_dexcom_connection, get_database_connection
 
 def get_latest_timestamp(cursor, db_name):
     query = f"SELECT MAX(timestamp) FROM {db_name}"

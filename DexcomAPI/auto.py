@@ -4,7 +4,6 @@
     run every five minutes with low amounts of data usage
 '''
 
-import os
 import smtplib
 from pydexcom import Dexcom
 from email.mime.text import MIMEText

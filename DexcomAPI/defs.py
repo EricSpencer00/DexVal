@@ -5,7 +5,6 @@ import mysql.connector
 import pydexcom
 from dotenv import load_dotenv
 from twilio.rest import Client
-from authlib.integrations.flask_client import OAuth
 import requests
 
 load_dotenv()
