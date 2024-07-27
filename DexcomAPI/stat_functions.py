@@ -226,7 +226,7 @@ def verbose_message_mgdl(dexcom):
                    f"Glucose state: {glucose_state}\n" \
                    f"Average glucose level: {average_glucose_mgdl} mg/dL\n" \
                    f"Estimated A1C: {estimated_a1c}\n" \
-                   f"Time in Range (70-150 mg/dL): {time_in_range_percentage:.2f}%\n" \
+                   f"Time in Range ({low_mgdl}-{high_mgdl} mg/dL): {time_in_range_percentage:.2f}%\n" \
                    f"Median Glucose: {median_glucose_mgdl} mg/dL\n" \
                    f"Standard Deviation: {stdev_glucose_mgdl} mg/dL\n" \
                    f"Minimum Glucose: {min_glucose_mgdl} mg/dL\n" \
@@ -234,7 +234,7 @@ def verbose_message_mgdl(dexcom):
                    f"Glucose Range: {glucose_range_mgdl} mg/dL\n" \
                    f"Coef. of Variation: {round((stdev_glucose_mgdl / average_glucose_mgdl) * 100, 4)}%\n" \
                    f"Glycemic Variability Index: {glycemic_variability_index}%" \
-                   f"Time in Range (70-150 mg/dL): {time_in_range_percentage:.2f}%\n"
+                   f"Time in Range ({low_mgdl}-{high_mgdl} mg/dL): {time_in_range_percentage:.2f}%\n"
 
     return message_body
 
@@ -273,7 +273,7 @@ def verbose_message_mmol(dexcom):
                    f"Glucose state: {glucose_state}\n" \
                    f"Average glucose level: {average_glucose_mmol} mmol/L\n" \
                    f"Estimated A1C: {estimated_a1c}\n" \
-                   f"Time in Range (3.9-8.3 mmol/L): {time_in_range_percentage:.1f}%\n" \
+                   f"Time in Range ({low_mmol}-{high_mmol} mmol/L): {time_in_range_percentage:.1f}%\n" \
                    f"Median Glucose: {median_glucose_mmol} mmol/L\n" \
                    f"Standard Deviation: {stdev_glucose_mmol} mmol/L\n" \
                    f"Minimum Glucose: {min_glucose_mmol} mmol/L\n" \
@@ -281,7 +281,7 @@ def verbose_message_mmol(dexcom):
                    f"Glucose Range: {glucose_range_mmol} mmol/L\n" \
                    f"Coef. of Variation: {round((stdev_glucose_mmol / average_glucose_mmol) * 100, 1)}%\n" \
                    f"Glycemic Variability Index: {glycemic_variability_index}%" \
-                   f"Time in Range (3.9-8.3 mmol/L): {time_in_range_percentage:.1f}%\n"
+                   f"Time in Range ({low_mmol}-{high_mmol} mmol/L): {time_in_range_percentage:.1f}%\n"
 
     return message_body
 
