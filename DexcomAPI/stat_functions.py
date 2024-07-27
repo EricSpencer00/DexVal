@@ -82,7 +82,7 @@ def get_current_value_mmol(dexcom):
             logging.error("Failed to get glucose reading.")
             return None
         
-        glucose_value = glucose_reading.mmol
+        glucose_value = glucose_reading.mmol_l
         logging.debug(f"Glucose reading value (mmol/L): {glucose_value}")
         return glucose_value
     except Exception as e:
