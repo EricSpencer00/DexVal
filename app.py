@@ -32,7 +32,8 @@ def index():
     estimated_a1c = stats.get_estimated_a1c(dexcom) or 'N/A'
     time_in_range_percentage = stats.time_in_range_percentage or 'N/A' 
 
-    stats.generate_glucose_graph(dexcom)
+    stats.generate_glucose_graph_mdgl(dexcom)
+    stats.generate_glucose_graph_mmol(dexcom)
 
     # Render template with the glucose data
     return render_template('index.html', 
@@ -56,7 +57,8 @@ def index():
                            glycemic_variability_index=glycemic_variability_index,
                            estimated_a1c=estimated_a1c,
                            time_in_range_percentage=time_in_range_percentage,
-                           graph_path='static/dexcom_glucose_graph.png')
+                           graph_path_mdgl='static/dexcom_glucose_graph_mdgl.png',
+                           graph_path_mmol='static/dexcom_glucose_graph_mmol.png')
 
 if __name__ == '__main__':
     app.run(debug=True)

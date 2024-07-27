@@ -324,7 +324,7 @@ def generate_bit_board(dexcom, height=5, width=20):
     for row in board:
         print(''.join(row))
 
-def generate_glucose_graph(dexcom, output_path='static/dexcom_glucose_graph.png'):
+def generate_glucose_graph_mdgl(dexcom, output_path='static/dexcom_glucose_graph_mdgl.png'):
     glucose_graph: List = dexcom.get_glucose_readings(minutes=1440, max_count=288)
     glucose_values = [reading.value for reading in glucose_graph]
     timestamps = [reading.datetime for reading in glucose_graph]
@@ -333,9 +333,9 @@ def generate_glucose_graph(dexcom, output_path='static/dexcom_glucose_graph.png'
     plt.figure(figsize=(10, 5))
     plt.plot(timestamps, glucose_values, color='black', linewidth=1)
 
-    low_glucose = [idx for idx, reading in enumerate(glucose_values) if reading < 70]
-    in_range_glucose = [idx for idx, reading in enumerate(glucose_values) if 70 <= reading <= 150]
-    high_glucose = [idx for idx, reading in enumerate(glucose_values) if reading > 150]
+    low_glucose = [idx for idx, reading in enumerate(glucose_values) if reading < low_mgdl]
+    in_range_glucose = [idx for idx, reading in enumerate(glucose_values) if low_mgdl <= reading <= high_mgdl]
+    high_glucose = [idx for idx, reading in enumerate(glucose_values) if reading > high_mgdl]
 
     if low_glucose:
         plt.axhline(y=min(glucose_values), color='red', linestyle='--', linewidth=1, alpha=0.5, xmin=min(low_glucose)/len(glucose_values), xmax=max(low_glucose)/len(glucose_values))
@@ -347,11 +347,11 @@ def generate_glucose_graph(dexcom, output_path='static/dexcom_glucose_graph.png'
 
     for i, arrow in enumerate(trend_arrows):
         if arrow == "↑":
-            plt.scatter(timestamps[i], glucose_values[i], color='green', marker='^', s=50)
+            plt.scatter(timestamps[i], glucose_values[i], color='orange', marker='^', s=25)
         elif arrow == "↓":
-            plt.scatter(timestamps[i], glucose_values[i], color='red', marker='v', s=50)
+            plt.scatter(timestamps[i], glucose_values[i], color='red', marker='v', s=25)
         else:
-            plt.scatter(timestamps[i], glucose_values[i], color='orange', marker='o', s=50)
+            plt.scatter(timestamps[i], glucose_values[i], color='green', marker='o', s=25)
 
     plt.title('Dexcom Glucose Readings Over the Past Day')
     plt.xlabel('Time (Day / Hour)')
@@ -361,3 +361,40 @@ def generate_glucose_graph(dexcom, output_path='static/dexcom_glucose_graph.png'
 
     plt.savefig(output_path)
     plt.close()
+
+def generate_glucose_graph_mmol(dexcom, output_path='static/dexcom_glucose_graph_mmol.png'):
+    glucose_graph: List = dexcom.get_glucose_readings(minutes=1440, max_count=288)
+    glucose_values = [reading.value for reading in glucose_graph]
+    timestamps = [reading.datetime for reading in glucose_graph]
+    trend_arrows = [reading.trend_arrow for reading in glucose_graph]
+
+    glucose_values_mmol = [round(value / 18.01559, 1) for value in glucose_values]
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(timestamps, glucose_values_mmol, color='black', linewidth=1)
+
+    low_glucose = [idx for idx, reading in enumerate(glucose_values_mmol) if reading < low_mmol]
+    in_range_glucose = [idx for idx, reading in enumerate(glucose_values_mmol) if low_mmol <= reading <= high_mmol]
+    high_glucose = [idx for idx, reading in enumerate(glucose_values_mmol) if reading > high_mmol]
+
+    if low_glucose:
+        plt.axhline(y=min(glucose_values_mmol), color='red', linestyle='--', linewidth=1, alpha=0.5, xmin=min(low_glucose)/len(glucose_values_mmol), xmax=max(low_glucose)/len(glucose_values_mmol))
+    if high_glucose:
+        plt.axhline(y=max(glucose_values_mmol), color='red', linestyle='--', linewidth=1, alpha=0.5, xmin=min(high_glucose)/len(glucose_values_mmol), xmax=max(high_glucose)/len(glucose_values_mmol))
+    if in_range_glucose:
+        plt.axhline(y=3.9, color='green', linestyle='--', linewidth=1, alpha=0.5, xmin=min(in_range_glucose)/len(glucose_values_mmol), xmax=max(in_range_glucose)/len(glucose_values_mmol))
+        plt.axhline(y=8.3, color='green', linestyle='--', linewidth=1, alpha=0.5, xmin=min(in_range_glucose)/len(glucose_values_mmol), xmax=max(in_range_glucose)/len(glucose_values_mmol))
+
+    for i, arrow in enumerate(trend_arrows):
+        if arrow == "↑":
+            plt.scatter(timestamps[i], glucose_values_mmol[i], color='orange', marker='^', s=25)
+        elif arrow == "↓":
+            plt.scatter(timestamps[i], glucose_values_mmol[i], color='red', marker='v', s=25)
+        else:
+            plt.scatter(timestamps[i], glucose_values_mmol[i], color='green', marker='o', s=25)
+        
+    plt.title('Dexcom Glucose Readings Over the Past Day')
+    plt.xlabel('Time (Day / Hour)')
+    plt.ylabel('Glucose Level (mmol/L)')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
