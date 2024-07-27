@@ -4,7 +4,7 @@ import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from defs import get_dexcom_connection, get_sender_email_credentials, get_receiver_email, get_database_connection
-from stat_functions import verbose_message_mgdl, verbose_message_mmol, concise_message_mdgl, concise_message_mmol, generate_bit_board
+from stat_functions import verbose_message_mgdl, verbose_message_mmol, concise_message_mdgl, concise_message_mmol, generate_bit_board, generate_glucose_graph
 from database import insert_glucose_readings
 
 # Initialize variables
@@ -24,6 +24,8 @@ print(concise_message_mmol(dexcom))
 print("\n")
 generate_bit_board(dexcom)
 print("\n\n")
+
+generate_glucose_graph(dexcom)
 
 message = MIMEMultipart()
 message["From"] = email_username
