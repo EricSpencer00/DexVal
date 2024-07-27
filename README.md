@@ -98,22 +98,5 @@ Predicting future glucose levels...
 ```
 This information is based solely on data, and does not incorporate factors like insulin/carb correction. It's a good predictor of what would happen to you if you didn't do anything based on your current trends. The program takes the 20 previous points and predicts the next readings based on linear regression.
 
-## Background information
-
-Being a Type 1 Diabetic, a CGM is necessary for my day to day life. 
-The Dexcom allows me to see my blood glucose levels throughout the day. 
-Things like a Time in Range percentage and A1C estimator keep me alive and help 
-make sure I am staying healthy.
-Through a sensor on my body, a transmitter reads the level given to it by the sensor
-and then transmits the number to my phone using Dexcom's cloud database.
-Using Dexcom's g6 mobile app I can see this data, up to 24 hours.
-Using Dexcom's Clarity mobile app I can see the data for the past year.
-However, I am looking to do more than what the Clarity app does.
-I want to learn how my habits, trends, and other factors can influence
-my data. As of right now, all I can do is display data, but in the
-future I hope to have even more functionality than apps like Sugarmate 
-and Clarity
-
-
 
 
