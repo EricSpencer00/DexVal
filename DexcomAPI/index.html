@@ -6,116 +6,117 @@
     <title>Glucose Data</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
+            background-color: #333;
         }
         h1 {
-            color: #333;
+            color: #fff;
+            text-align: center;
+            margin-top: 20px;
         }
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 40px auto;
+            background: #555;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
         .stat {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
         }
         .stat:last-child {
             border-bottom: none;
         }
         .label {
             font-weight: bold;
-            color: #555;
+            color: #fff;
         }
         .value {
-            color: #000;
+            color: #fff;
         }
         .button-container {
             text-align: center;
-            margin: 20px 0;
+            margin: 30px 0;
         }
         .toggle-button {
-            background-color: #007bff;
+            background-color: #00bd29;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s ease;
         }
         .toggle-button:hover {
-            background-color: #0056b3;
+            background-color: #2aa345;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Glucose Data</h1>
-        <div class="button-container">
-            <button class="toggle-button" onclick="toggleUnits()">Switch to mmol/L</button>
-        </div>
+        <h1>DexVal</h1>
         <div class="stat mgdl">
-            <div class="label">Current Glucose (mg/dL):</div>
-            <div class="value">{{ current_glucose_mgdl }}</div>
+            <div class="label">Current Glucose:</div>
+            <div class="value">{{ current_glucose_mgdl }} mg/dL</div>
         </div>
         <div class="stat mmol" style="display: none;">
-            <div class="label">Current Glucose (mmol/L):</div>
-            <div class="value">{{ current_glucose_mmol }}</div>
+            <div class="label">Current Glucose:</div>
+            <div class="value">{{ current_glucose_mmol }} mmol/L</div>
         </div>
         <div class="stat mgdl">
-            <div class="label">Average Glucose (mg/dL):</div>
-            <div class="value">{{ average_glucose_mgdl }}</div>
+            <div class="label">Average Glucose:</div>
+            <div class="value">{{ average_glucose_mgdl }} mg/dL</div>
         </div>
         <div class="stat mmol" style="display: none;">
-            <div class="label">Average Glucose (mmol/L):</div>
-            <div class="value">{{ average_glucose_mmol }}</div>
+            <div class="label">Average Glucose:</div>
+            <div class="value">{{ average_glucose_mmol }} mmol/L</div>
         </div>
         <div class="stat mgdl">
-            <div class="label">Median Glucose (mg/dL):</div>
-            <div class="value">{{ median_glucose_mgdl }}</div>
+            <div class="label">Median Glucose:</div>
+            <div class="value">{{ median_glucose_mgdl }} mg/dL</div>
         </div>
         <div class="stat mmol" style="display: none;">
-            <div class="label">Median Glucose (mmol/L):</div>
-            <div class="value">{{ median_glucose_mmol }}</div>
+            <div class="label">Median Glucose:</div>
+            <div class="value">{{ median_glucose_mmol }} mmol/L</div>
         </div>
         <div class="stat mgdl">
-            <div class="label">Standard Deviation (mg/dL):</div>
-            <div class="value">{{ stdev_glucose_mgdl }}</div>
+            <div class="label">Standard Deviation:</div>
+            <div class="value">{{ stdev_glucose_mgdl }} mg/dL</div>
         </div>
         <div class="stat mmol" style="display: none;">
-            <div class="label">Standard Deviation (mmol/L):</div>
-            <div class="value">{{ stdev_glucose_mmol }}</div>
+            <div class="label">Standard Deviation:</div>
+            <div class="value">{{ stdev_glucose_mmol }} mmol/L</div>
         </div>
         <div class="stat mgdl">
-            <div class="label">Minimum Glucose (mg/dL):</div>
-            <div class="value">{{ min_glucose_mgdl }}</div>
+            <div class="label">Minimum Glucose:</div>
+            <div class="value">{{ min_glucose_mgdl }} mg/dL</div>
         </div>
         <div class="stat mmol" style="display: none;">
-            <div class="label">Minimum Glucose (mmol/L):</div>
-            <div class="value">{{ min_glucose_mmol }}</div>
+            <div class="label">Minimum Glucose:</div>
+            <div class="value">{{ min_glucose_mmol }} mmol/L</div>
         </div>
         <div class="stat mgdl">
-            <div class="label">Maximum Glucose (mg/dL):</div>
-            <div class="value">{{ max_glucose_mgdl }}</div>
+            <div class="label">Maximum Glucose:</div>
+            <div class="value">{{ max_glucose_mgdl }} mg/dL</div>
         </div>
         <div class="stat mmol" style="display: none;">
-            <div class="label">Maximum Glucose (mmol/L):</div>
-            <div class="value">{{ max_glucose_mmol }}</div>
+            <div class="label">Maximum Glucose:</div>
+            <div class="value">{{ max_glucose_mmol }} mmol/L</div>
         </div>
         <div class="stat mgdl">
-            <div class="label">Glucose Range (mg/dL):</div>
-            <div class="value">{{ glucose_range_mgdl }}</div>
+            <div class="label">Glucose Range:</div>
+            <div class="value">{{ glucose_range_mgdl }} mg/dL</div>
         </div>
         <div class="stat mmol" style="display: none;">
-            <div class="label">Glucose Range (mmol/L):</div>
-            <div class="value">{{ glucose_range_mmol }}</div>
+            <div class="label">Glucose Range:</div>
+            <div class="value">{{ glucose_range_mmol }} mmol/L</div>
         </div>
         <div class="stat">
             <div class="label">Glucose State:</div>
@@ -137,8 +138,8 @@
             <div class="label">Time in Range (%):</div>
             <div class="value">{{ time_in_range_percentage }}</div>
         </div>
-        <div class="graph">
-            <img src="{{ static/dexcom_glucose_graph.png }}" alt="Glucose Graph">
+        <div class="button-container">
+            <button class="toggle-button" onclick="toggleUnits()">Switch to mmol/L</button>
         </div>
     </div>
 
@@ -161,6 +162,40 @@
             } else {
                 button.innerText = 'Switch to mmol/L';
             }
+        }
+
+        function update_mdgl_range() {
+            fetch('/update_mdgl_range', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ high_mdgl, low_mdgl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function update_mmol_range() {
+            fetch('/update_mmol_range', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ high_mmol, low_mmol })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         }
     </script>
 </body>

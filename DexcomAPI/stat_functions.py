@@ -199,6 +199,12 @@ def get_estimated_a1c(dexcom):
     round(estimated_a1c, 4)
     return estimated_a1c
 
+def get_time_in_range_percentage(dexcom):
+    glucose_values = get_glucose_values(dexcom)
+    in_range_glucose = [g for g in glucose_values if low_mgdl <= g <= high_mgdl]
+    time_in_range_percentage = round((len(in_range_glucose) / len(glucose_values)) * 100, 4)
+    return time_in_range_percentage
+
 def verbose_message_mgdl(dexcom):
     glucose_reading = dexcom.get_current_glucose_reading() # get_current_value_mgdl
     glucose_value = glucose_reading.value

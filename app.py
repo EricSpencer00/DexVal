@@ -1,6 +1,4 @@
-from flask import Flask
-from flask import render_template
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 from DexcomAPI import defs, stat_functions as stats
 
 app = Flask(__name__, template_folder='DexcomAPI')
@@ -32,9 +30,6 @@ def index():
     estimated_a1c = stats.get_estimated_a1c(dexcom) or 'N/A'
     time_in_range_percentage = stats.time_in_range_percentage or 'N/A' 
 
-    stats.generate_glucose_graph_mdgl(dexcom)
-    stats.generate_glucose_graph_mmol(dexcom)
-
     # Render template with the glucose data
     return render_template('index.html', 
                            current_glucose_mgdl=current_glucose_mgdl,
@@ -56,9 +51,21 @@ def index():
                            coef_variation_percentage=coef_variation_percentage,
                            glycemic_variability_index=glycemic_variability_index,
                            estimated_a1c=estimated_a1c,
-                           time_in_range_percentage=time_in_range_percentage,
-                           graph_path_mdgl='static/dexcom_glucose_graph_mdgl.png',
-                           graph_path_mmol='static/dexcom_glucose_graph_mmol.png')
+                           time_in_range_percentage=time_in_range_percentage)
+
+@app.route('/update_global_mdgl_range', methods=['POST'])
+def update_mdgl():
+    data = request.json
+    stats.high_mgdl = data['high_mgdl']
+    stats.low_mgdl = data['low_mgdl']
+    return jsonify({"message": "mdgl value(s) updated successfully"}), 200
+
+@app.route('/update_global_mmol_range', methods=['POST'])
+def update_mmol():
+    data = request.json
+    stats.high_mmol = data['high_mmol']
+    stats.low_mmol = data['low_mmol']
+    return jsonify({"message": "mmol value(s) updated successfully"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
