@@ -1,4 +1,4 @@
-.txt
+*.txt
 .env
 *.png
 .DS_Store
