@@ -191,13 +191,12 @@ def get_glycemic_variability_index(dexcom):
 
     glycemic_variability_index = (stdev_glucose_mgdl / average_glucose_mgdl) * 100
 
-    return glycemic_variability_index
+    return round(glycemic_variability_index, 4)
 
 def get_estimated_a1c(dexcom):
     average_glucose_mdgl = get_average_glucose_mgdl(dexcom)
     estimated_a1c = (average_glucose_mdgl + 46.7) / 28.7
-    round(estimated_a1c, 4)
-    return estimated_a1c
+    return round(estimated_a1c, 4) 
 
 def get_time_in_range_percentage(dexcom):
     glucose_values = get_glucose_values(dexcom)
