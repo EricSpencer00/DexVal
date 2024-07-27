@@ -191,8 +191,10 @@ def get_glycemic_variability_index(dexcom):
     return glycemic_variability_index
 
 def get_estimated_a1c(dexcom):
-    average_glucose_mmol = get_average_glucose_mmol(dexcom)
-    return round((28.7 * average_glucose_mmol + 46.7) / 28.7, 4)
+    average_glucose_mdgl = get_average_glucose_mgdl(dexcom)
+    estimated_a1c = (average_glucose_mdgl + 46.7) / 28.7
+    round(estimated_a1c, 4)
+    return estimated_a1c
 
 def verbose_message_mgdl(dexcom):
     glucose_reading = dexcom.get_current_glucose_reading() # get_current_value_mgdl
