@@ -2,10 +2,12 @@
 import statistics
 import logging
 import matplotlib.pyplot as plt
+import matplotlib
 from typing import List
 from datetime import datetime
 
 logging.basicConfig(level=logging.DEBUG)
+matplotlib.set_loglevel("warning")
 
 current_glucose_mgdl = None
 current_glucose_mmol = None

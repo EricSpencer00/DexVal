@@ -3,9 +3,11 @@
 import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from defs import get_dexcom_connection, get_sender_email_credentials, get_receiver_email, get_database_connection
-from stat_functions import verbose_message_mgdl, verbose_message_mmol, concise_message_mdgl, concise_message_mmol, generate_bit_board, generate_glucose_graph
+from defs import get_dexcom_connection, get_sender_email_credentials, get_receiver_email, get_dexcom_connection_access
+from stat_functions import verbose_message_mgdl, verbose_message_mmol, concise_message_mdgl, concise_message_mmol, generate_bit_board, generate_glucose_graph_mdgl, generate_glucose_graph_mmol
 from database import insert_glucose_readings
+import pydexcom
+import smtplib
 
 # Initialize variables
 dexcom = get_dexcom_connection()
@@ -25,7 +27,7 @@ print("\n")
 generate_bit_board(dexcom)
 print("\n\n")
 
-generate_glucose_graph(dexcom)
+generate_glucose_graph_mdgl(dexcom)
 
 message = MIMEMultipart()
 message["From"] = email_username
@@ -35,23 +37,23 @@ message["To"] = receiver_email
 # Output to phone number
 message.attach(MIMEText(concise_message_mdgl(dexcom), 'plain'))
 
-# try:
-#     domain = email_username.split('@')[-1] # Support all email domains
-#     smtp_server = f"smtp.{domain}"
-#     smtp_port = 587
-#     with smtplib.SMTP(smtp_server, smtp_port) as server:
-#         server.starttls()
-#         server.login(email_username, email_password)
-#         server.sendmail(email_username, receiver_email, message.as_string())
-#     print(f"Message sent successfully: {message}")
-# except Exception as e:
-#     print(f"error: {e}")
+try:
+    domain = email_username.split('@')[-1] # Support all email domains
+    smtp_server = f"smtp.{domain}"
+    smtp_port = 587
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.starttls()
+        server.login(email_username, email_password)
+        server.sendmail(email_username, receiver_email, message.as_string())
+    print(f"Message sent successfully: {message}")
+except Exception as e:
+    print(f"error: {e}")
 
 # Insert past 24 hours into database
-db = get_database_connection()
-db_name = os.getenv("sql_database")
+# db = get_database_connection()
+# db_name = os.getenv("sql_database")
 
-try: 
-    insert_glucose_readings(dexcom, db, db_name)
-finally:
-    db.close()
+# try: 
+#     insert_glucose_readings(dexcom, db, db_name)
+# finally:
+#     db.close()
