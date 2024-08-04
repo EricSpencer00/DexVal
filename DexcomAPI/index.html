@@ -70,6 +70,10 @@
             <div class="label">Current Glucose:</div>
             <div class="value">{{ current_glucose_mmol }} mmol/L</div>
         </div>
+        <div class="stat">
+            <div class="label">Glucose State:</div>
+            <div class="value">{{ glucose_state_mdgl }}</div>
+        </div>
         <div class="stat mgdl">
             <div class="label">Average Glucose:</div>
             <div class="value">{{ average_glucose_mgdl }} mg/dL</div>
@@ -117,10 +121,6 @@
         <div class="stat mmol" style="display: none;">
             <div class="label">Glucose Range:</div>
             <div class="value">{{ glucose_range_mmol }} mmol/L</div>
-        </div>
-        <div class="stat">
-            <div class="label">Glucose State:</div>
-            <div class="value">{{ glucose_state_mdgl }}</div>
         </div>
         <div class="stat">
             <div class="label">Coefficient of Variation (%):</div>
