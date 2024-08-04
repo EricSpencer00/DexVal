@@ -8,7 +8,7 @@ import smtplib
 from pydexcom import Dexcom
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from defs import get_dexcom_connection, get_sender_email_credentials, get_receiver_email, get_database_connection
+from defs import get_dexcom_connection, get_sender_email_credentials, get_receiver_email, get_sql_database_connection
 from stat_functions import concise_message_mdgl 
 
 def send_notification(email_username, email_password, receiver_email, body):

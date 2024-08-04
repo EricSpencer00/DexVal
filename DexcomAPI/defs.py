@@ -23,8 +23,8 @@ class TwilioClientError(Exception):
 
 def get_dexcom_connection():
     """Establish and return a connection to Dexcom using environment variables"""
-    dexcom_username = os.getenv("dexcom_username")
-    dexcom_password = os.getenv("dexcom_password")
+    dexcom_username = os.getenv("DEXCOM_USERNAME")
+    dexcom_password = os.getenv("DEXCOM_PASSWORD")
 
     if not dexcom_username or not dexcom_password:
         raise DexcomConnectionError("Dexcom username and password must be set as environment variables.")
@@ -36,8 +36,8 @@ def get_dexcom_connection():
 
 def get_dexcom_connection_access():
     """Establish and return a connection to Dexcom using AuthLib OAuth request"""
-    client_id = os.getenv("client_id")
-    client_secret = os.getenv("client_secret")
+    client_id = os.getenv("DEXCOM_CLIENT_ID")
+    client_secret = os.getenv("DEXCOM_CLIENT_SECRET")
 
     if not client_id or not client_secret:
         raise DexcomConnectionError("Client ID and client secret must be set as environment variables.")
@@ -49,7 +49,7 @@ def get_dexcom_connection_access():
         raise DexcomConnectionError(f"Failed to obtain Dexcom access token: {e}")
 
 def get_access_token(client_id, client_secret):
-    token_url = "https://api.dexcom.com/v2/oauth2/token"
+    token_url = os.getenv("DEXCOM_TOKEN_URL")
     payload = {
         "client_id": client_id,
         "client_secret": client_secret,
@@ -62,7 +62,7 @@ def get_access_token(client_id, client_secret):
     except requests.exceptions.RequestException as e:
         raise DexcomConnectionError(f"Failed to obtain access token: {e}")
 
-def get_database_connection():
+def get_sql_database_connection():
     """Connect to the SQL database using environment variables and return the connection"""
     try:
         connection = mysql.connector.connect(
