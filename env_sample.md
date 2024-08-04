@@ -1,8 +1,8 @@
 Here's how to name your .env file to work with the codebase:
 
 ```
-dexcom_username=yourusernamehere
-dexcom_password=yourpasswordhere
+DEXCOM_USERNAME=yourusernamehere
+DEXCOM_PASSWORD=yourpasswordhere
 
 email_username=email@gmail.com
 ```
