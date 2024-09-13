@@ -6,7 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from defs import get_dexcom_connection, get_sender_email_credentials, get_receiver_email, get_dexcom_connection_access
 from stat_functions import verbose_message_mgdl, verbose_message_mmol, concise_message_mdgl, concise_message_mmol, generate_bit_board, generate_glucose_graph_mdgl, generate_glucose_graph_mmol
 from database import insert_glucose_readings
-import pydexcom
+# import pydexcom
 import smtplib
 
 # Initialize variables
@@ -50,7 +50,7 @@ message.attach(MIMEText(concise_message_mdgl(dexcom), 'plain'))
 #     print(f"error: {e}")
 
 # Insert past 24 hours into database
-# db = get_database_connection()
+# db = get_sql_database_connection()
 # db_name = os.getenv("sql_database")
 
 # try: 
