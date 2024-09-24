@@ -1,12 +1,12 @@
 import os
 import mysql.connector
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from pydexcom import Dexcom
 from twilio.rest import Client
 import requests
 from dataclasses import dataclass
 
-load_dotenv()
+# load_dotenv()
 
 # Custom Exceptions
 class DexcomConnectionError(Exception):
