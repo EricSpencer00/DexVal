@@ -22,10 +22,13 @@ To do this:
 - Then, make sure you are sharing the credentials for your Dexcom account, not the follower's account
 - You will need to make sure your password is not only numbers, as this will cause Pydexcom to not recognize your password
 
-You will need to install pydexcom and MySQL for all features to work, I installed MySQL using Homebrew on my Mac.
+You will need to install the requirements for all features to work, I installed MySQL using Homebrew on my Mac.
 
+For Mac:
 ```
-pip3 install pydexcom
+python3 -m venv venv 
+source venv/bin/activate
+pip3 install -r requirements.txt
 ```
 ```
 brew install mysql
