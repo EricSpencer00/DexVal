@@ -43,6 +43,12 @@ class Config:
     twilio_from: str = os.getenv("twilio_from")
     twilio_to: str = os.getenv("twilio_to")
 
+    # Auth0 Configurations
+    auth0_client_id: str = os.getenv("AUTH0_CLIENT_ID")
+    auth0_client_secret: str = os.getenv("AUTH0_CLIENT_SECRET")
+    auth0_domain: str = os.getenv("AUTH0_DOMAIN")
+    auth0_callback_url: str = os.getenv("AUTH0_CALLBACK_URL")
+
 config = Config()
 
 # Dexcom Connection Functions
@@ -114,4 +120,20 @@ def get_twilio_client():
         return Client(config.twilio_account_sid, config.twilio_auth_token)
     except Exception as e:
         raise TwilioClientError(f"Failed to create Twilio client: {e}")
+
+# Auth0 configuration
+def auth0_login():
+    """Generate Auth0 login URL with appropriate parameters."""
+    auth0_url = f"https://{config.auth0_domain}/authorize"
+    params = {
+        "client_id": config.auth0_client_id,
+        "redirect_uri": config.auth0_callback_url,
+        "response_type": "code",
+        "scope": "openid profile email"
+    }
+    try:
+        response = requests.get(auth0_url, params=params)
+        return response.url
+    except Exception as e:
+        raise Exception(f"Failed to initiate Auth0 login: {e}")
 
