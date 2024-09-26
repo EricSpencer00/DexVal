@@ -3,7 +3,7 @@ from DexcomAPI import defs, stat_functions as stats
 import requests
 # from auth0.v3.authentication import GetToken
 # from auth0.v3.authentication import Users
-from flask_oauthlib.client import OAuth
+from authlib.integrations.flask_client import OAuth
 import requests
 import os
 
@@ -15,20 +15,21 @@ AUTH0_CLIENT_ID = 'your_auth0_client_id'
 AUTH0_CLIENT_SECRET = 'your_auth0_client_secret'
 AUTH0_DOMAIN = 'your_auth0_domain'
 AUTH0_BASE_URL = 'https://' + AUTH0_DOMAIN
+AUTH0_ACCESS_TOKEN_URL = f'https://{AUTH0_DOMAIN}/oauth/token'
+AUTH0_AUTHORIZE_URL = f'https://{AUTH0_DOMAIN}/authorize'
 
 oauth = OAuth(app)
 
-auth0 = oauth.remote_app(
+auth0 = oauth.register(
     'auth0',
-    consumer_key=AUTH0_CLIENT_ID,
-    consumer_secret=AUTH0_CLIENT_SECRET,
-    request_token_params={
-        'scope': 'openid profile',
+    client_id=AUTH0_CLIENT_ID,
+    client_secret=AUTH0_CLIENT_SECRET,
+    api_base_url=AUTH0_BASE_URL,
+    access_token_url=AUTH0_ACCESS_TOKEN_URL,
+    authorize_url=AUTH0_AUTHORIZE_URL,
+    client_kwargs={
+        'scope': 'openid profile email',
     },
-    base_url=AUTH0_BASE_URL,
-    access_token_url=f'https://{AUTH0_DOMAIN}/oauth/token',
-    authorize_url=f'https://{AUTH0_DOMAIN}/authorize',
-    access_token_method='POST'
 )
 
 # Initialize Dexcom object with appropriate credentials
@@ -81,54 +82,9 @@ def index():
                            estimated_a1c=estimated_a1c,
                            time_in_range_percentage=time_in_range_percentage)
 
-@app.route('/callback')
-def auth_callback():
-    response = auth0.authorized_response()
-    if response is None or response.get('access_token') is None:
-        return 'Access denied: Reason={} Error={}'.format(
-            request.args['error'], request.args['error_description']
-        )
-
-    # Get user info from Auth0
-    session['auth_token'] = response['access_token']
-    userinfo = auth0.get('userinfo')
-    session['profile'] = userinfo.data
-
-    # Redirect to Dexcom OAuth after login
-    return redirect('/dexcom-signin')
-
-@app.route('/dexcom-callback')
-def dexcom_callback():
-    # Get the authorization code from Dexcom
-    auth_code = request.args.get('code')
-
-    # Exchange code for access token
-    url = "https://api.dexcom.com/v2/oauth2/token"
-    payload = {
-        "grant_type": "authorization_code",
-        "code": auth_code,
-        "redirect_uri": "http://localhost:5003/dexcom-callback",
-        "client_id": "your_dexcom_client_id",
-        "client_secret": "your_dexcom_client_secret"
-    }
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-    response = requests.post(url, data=payload, headers=headers)
-    if response.status_code == 200:
-        session['dexcom_token'] = response.json()['access_token']
-        return redirect('/')  # Redirect to home page or wherever
-    else:
-        return f"Error: {response.status_code} - {response.text}"
-
-
 @app.route('/login')
 def login():
     return auth0.authorize(callback=url_for('auth_callback', _external=True))
-
-@app.route('/dexcom-signin')
-def dexcom_signin():
-    # Redirect to Dexcom authorization endpoint
-    return redirect(f'https://api.dexcom.com/v2/oauth2/login?client_id={your_dexcom_client_id}&redirect_uri=http://localhost:5003/dexcom-callback&response_type=code&scope=offline_access')
 
 @app.route('/update_global_mdgl_range', methods=['POST'])
 def update_mdgl():
@@ -143,6 +99,45 @@ def update_mmol():
     stats.high_mmol = data['high_mmol']
     stats.low_mmol = data['low_mmol']
     return jsonify({"message": "mmol value(s) updated successfully"}), 200
+
+@app.route('/callback')
+def auth_callback():
+    token = auth0.authorize_access_token()  # Get token using Authlib
+    session['auth_token'] = token
+    userinfo = auth0.get('userinfo')
+    session['profile'] = userinfo.json()
+    return redirect('/')
+
+@app.route('/login')
+def login():
+    return auth0.authorize_redirect(redirect_uri=AUTH0_CALLBACK_URL)
+
+@app.route('/dexcom-signin')
+def dexcom_signin():
+    return redirect(f'https://api.dexcom.com/v2/oauth2/login?client_id={your_dexcom_client_id}&redirect_uri=http://localhost:5003/dexcom-callback&response_type=code&scope=offline_access')
+
+# Dexcom callback route
+@app.route('/dexcom-callback')
+def dexcom_callback():
+    # Exchange the auth code for an access token
+    auth_code = request.args.get('code')
+    url = "https://api.dexcom.com/v2/oauth2/token"
+    payload = {
+        "grant_type": "authorization_code",
+        "code": auth_code,
+        "redirect_uri": "http://localhost:5003/dexcom-callback",
+        "client_id": "your_dexcom_client_id",
+        "client_secret": "your_dexcom_client_secret"
+    }
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+    response = requests.post(url, data=payload, headers=headers)
+    if response.status_code == 200:
+        session['dexcom_token'] = response.json()['access_token']
+        return redirect('/')
+    else:
+        return f"Error: {response.status_code} - {response.text}"
+
 
 if __name__ == '__main__':
     app.run(port=5003, debug=True)
