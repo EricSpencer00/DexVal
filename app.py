@@ -108,10 +108,6 @@ def auth_callback():
     session['profile'] = userinfo.json()
     return redirect('/')
 
-@app.route('/login')
-def login():
-    return auth0.authorize_redirect(redirect_uri=AUTH0_CALLBACK_URL)
-
 @app.route('/dexcom-signin')
 def dexcom_signin():
     return redirect(f'https://api.dexcom.com/v2/oauth2/login?client_id={your_dexcom_client_id}&redirect_uri=http://localhost:5003/dexcom-callback&response_type=code&scope=offline_access')

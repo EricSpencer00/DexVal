@@ -58,7 +58,9 @@ def get_dexcom_connection():
         raise DexcomConnectionError("Dexcom username and password must be set as environment variables.")
     
     try:
-        return Dexcom(config.dexcom_username, config.dexcom_password)
+        # token = get_access_token()  # Assuming this function gets the token for you
+        # return Dexcom(token)
+        return Dexcom(username=config.dexcom_username, password=config.dexcom_password)
     except Exception as e:
         raise DexcomConnectionError(f"Failed to connect to Dexcom: {e}")
 
