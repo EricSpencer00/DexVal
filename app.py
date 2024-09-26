@@ -10,7 +10,7 @@ import os
 app = Flask(__name__, template_folder='DexcomAPI/templates')
 app.secret_key = os.getenv("APP_SECRET_KEY")
 
-AUTH0_CALLBACK_URL = 'http://localhost:5003/callback'
+AUTH0_CALLBACK_URL = 'http://localhost:5001/callback'
 AUTH0_CLIENT_ID = 'your_auth0_client_id'
 AUTH0_CLIENT_SECRET = 'your_auth0_client_secret'
 AUTH0_DOMAIN = 'your_auth0_domain'
@@ -84,7 +84,8 @@ def index():
 
 @app.route('/login')
 def login():
-    return auth0.authorize(callback=url_for('auth_callback', _external=True))
+    # return auth0.authorize(callback=url_for('auth_callback', _external=True))
+    pass
 
 @app.route('/update_global_mdgl_range', methods=['POST'])
 def update_mdgl():
@@ -136,4 +137,4 @@ def dexcom_callback():
 
 
 if __name__ == '__main__':
-    app.run(port=5003, debug=True)
+    app.run(port=5001, debug=True)
