@@ -5,7 +5,9 @@ from authlib.integrations.flask_client import OAuth
 import requests
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, 
+            template_folder="DexcomAPI/templates", 
+            static_folder="DexcomAPI/static")
 app.secret_key = os.getenv("APP_SECRET_KEY")
 
 AUTH0_CALLBACK_URL = 'http://localhost:5001/callback'
@@ -64,7 +66,7 @@ def index():
     }
 
     # Render template with glucose data
-    return render_template("DexcomAPI/templates/index.html", **glucose_data)
+    return render_template("index.html", **glucose_data)
 
 # def index():
 #     # Get current glucose data
