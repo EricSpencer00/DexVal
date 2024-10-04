@@ -138,4 +138,10 @@ def auth0_login():
         return response.url
     except Exception as e:
         raise Exception(f"Failed to initiate Auth0 login: {e}")
+    
+def get_secret_key():
+    """Return the Flask secret key to be used"""
+    APP_SECRET_KEY = os.urandom(24).hex()
+    return APP_SECRET_KEY
+
 

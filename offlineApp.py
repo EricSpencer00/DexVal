@@ -8,7 +8,7 @@ import os
 app = Flask(__name__, 
             template_folder="DexcomAPI/templates", 
             static_folder="DexcomAPI/static")
-app.secret_key = os.getenv("APP_SECRET_KEY")
+app.secret_key = defs.get_secret_key()
 
 AUTH0_CALLBACK_URL = 'http://localhost:5001/callback'
 AUTH0_CLIENT_ID = 'your_auth0_client_id'
