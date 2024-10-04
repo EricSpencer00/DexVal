@@ -1,0 +1,78 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+}
+
+h1 {
+    color: #fff;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #555;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.stat:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: bold;
+    color: #fff;
+}
+
+.value {
+    color: #fff;
+}
+
+.button-container {
+    text-align: center;
+    margin: 30px 0;
+}
+
+/* Style for the Auth0 login button */
+.auth-button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.auth-button:hover {
+    background-color: #0056b3;
+}
+
+/* Style for the toggle unit button */
+.toggle-button {
+    background-color: #00bd29;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+    background-color: #2aa345;
+}

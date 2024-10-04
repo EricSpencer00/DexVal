@@ -4,63 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glucose Data</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #333;
-        }
-        h1 {
-            color: #fff;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            background: #555;
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .stat:last-child {
-            border-bottom: none;
-        }
-        .label {
-            font-weight: bold;
-            color: #fff;
-        }
-        .value {
-            color: #fff;
-        }
-        .button-container {
-            text-align: center;
-            margin: 30px 0;
-        }
-        .toggle-button {
-            background-color: #00bd29;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-        .toggle-button:hover {
-            background-color: #2aa345;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
+        <div class="button-container">
+            <a href="/login">
+                <button class="auth-button">Sign In</button> <!-- Separate class for Auth button -->
+            </a>
+        </div>
         <h1>DexVal</h1>
         <div class="stat mgdl">
             <div class="label">Current Glucose:</div>
@@ -163,50 +115,6 @@
                 button.innerText = 'Switch to mmol/L';
             }
         }
-
-        function update_mdgl_range() {
-            fetch('/update_mdgl_range', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ high_mdgl, low_mdgl })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
-        function update_mmol_range() {
-            fetch('/update_mmol_range', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ high_mmol, low_mmol })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
     </script>
-    <!-- <body>
-        <h1>Update mg/dL Values</h1>
-        <form onsubmit="event.preventDefault(); updateMgdl();">
-            <label for="high_mgdl">High mg/dL:</label>
-            <input type="text" id="high_mgdl" name="high_mgdl"><br><br>
-            <label for="low_mgdl">Low mg/dL:</label>
-            <input type="text" id="low_mgdl" name="low_mgdl"><br><br>
-            <input type="submit" value="Update">
-        </form>
-    </body> -->
 </body>
 </html>
