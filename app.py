@@ -101,9 +101,9 @@ def auth_callback():
 @app.route('/dexcom-signin')
 def dexcom_signin():
     dexcom_client_id = os.getenv('DEXCOM_CLIENT_ID')
-    # redirect_uri = url_for('dexcom_callback', _external=True)
     redirect_uri = os.getenv('DEXCOM_REDIRECT_URI')
-    return redirect(f'https://api.dexcom.com/v2/oauth2/login?client_id={dexcom_client_id}&redirect_uri={redirect_uri}&response_type=code&scope=offline_access')
+    dexcom_login_url = f"https://api.dexcom.com/v2/oauth2/login?client_id={dexcom_client_id}&redirect_uri={redirect_uri}&response_type=code&scope=offline_access"
+    return redirect(dexcom_login_url)
 
 # Dexcom callback route
 @app.route('/dexcom-callback')
@@ -125,9 +125,39 @@ def dexcom_callback():
     response = requests.post(dexcom_token_url, data=payload, headers=headers)
     if response.status_code == 200:
         session['dexcom_token'] = response.json()['access_token']
-        return redirect('/')
+        # return redirect('/')
+        return redirect('/show-dexcom-data')
     else:
         return f"Error: {response.status_code} - {response.text}"
+    
+@app.route('/show-dexcom-data')
+def show_dexcom_data():
+    access_token = session.get('dexcom_token')
+    
+    if not access_token:
+        return redirect('/dexcom-signin')  # If no token is found, redirect to login
+    
+    dexcom_api_url = "https://api.dexcom.com/v2/users/self/egvs"
+    
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    
+    params = {
+        "startDate": "2023-10-01T00:00:00",  # Adjust start/end dates as needed
+        "endDate": "2023-10-05T00:00:00"
+    }
+
+    response = requests.get(dexcom_api_url, headers=headers, params=params)
+    
+    if response.status_code == 200:
+        glucose_data = response.json()
+        # You can now process and display the glucose data as needed
+        return render_template('dexcom_data.html', glucose_data=glucose_data)
+    else:
+        return f"Error: {response.status_code} - {response.text}"
+
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
