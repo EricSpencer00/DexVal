@@ -36,7 +36,7 @@ auth0 = oauth.register(
 )
 
 # Initialize Dexcom object with appropriate credentials
-# dexcom = defs.get_dexcom_connection()
+dexcom = defs.get_dexcom_connection()
 
 def safe_get_value(func, *args):
     """Helper function to safely get values or return 'N/A' if None."""
@@ -46,30 +46,30 @@ def safe_get_value(func, *args):
 def index():
     # Dictionary to store glucose data
     glucose_data = {
-        'current_glucose_mgdl': 120,
-        'current_glucose_mmol': 4,
-        'glucose_state_mdgl': "Steady",
-        'glucose_state_mmol': "Steady",
-        'average_glucose_mgdl': 134,
-        'average_glucose_mmol': 4.2,
-        'median_glucose_mgdl': 120,
-        'median_glucose_mmol': 4,
-        'stdev_glucose_mgdl': 5,
-        'stdev_glucose_mmol': 5,
-        'min_glucose_mgdl': 90,
-        'min_glucose_mmol': 3.2,
-        'max_glucose_mgdl': 190,
-        'max_glucose_mmol': 6.5,
-        'glucose_range_mgdl': 90,
-        'glucose_range_mmol': 2.1,
-        'coef_variation_percentage': 1,
-        'glycemic_variability_index': 1,
-        'estimated_a1c': 5.4,
-        'time_in_range_percentage': 90  # Assuming this is a direct variable
+        'current_glucose_mgdl': safe_get_value(stats.get_current_value_mdgl, dexcom),
+        'current_glucose_mmol': safe_get_value(stats.get_current_value_mmol, dexcom),
+        'glucose_state_mdgl': safe_get_value(stats.get_glucose_state_mdgl, dexcom),
+        'glucose_state_mmol': safe_get_value(stats.get_glucose_state_mmol, dexcom),
+        'average_glucose_mgdl': safe_get_value(stats.get_average_glucose_mgdl, dexcom),
+        'average_glucose_mmol': safe_get_value(stats.get_average_glucose_mmol, dexcom),
+        'median_glucose_mgdl': safe_get_value(stats.get_median_glucose_mgdl, dexcom),
+        'median_glucose_mmol': safe_get_value(stats.get_median_glucose_mmol, dexcom),
+        'stdev_glucose_mgdl': safe_get_value(stats.get_stdev_glucose_mgdl, dexcom),
+        'stdev_glucose_mmol': safe_get_value(stats.get_stdev_glucose_mmol, dexcom),
+        'min_glucose_mgdl': safe_get_value(stats.get_min_glucose_mgdl, dexcom),
+        'min_glucose_mmol': safe_get_value(stats.get_min_glucose_mmol, dexcom),
+        'max_glucose_mgdl': safe_get_value(stats.get_max_glucose_mgdl, dexcom),
+        'max_glucose_mmol': safe_get_value(stats.get_max_glucose_mmol, dexcom),
+        'glucose_range_mgdl': safe_get_value(stats.get_glucose_range_mgdl, dexcom),
+        'glucose_range_mmol': safe_get_value(stats.get_glucose_range_mmol, dexcom),
+        'coef_variation_percentage': safe_get_value(stats.get_coef_variation_percentage, dexcom),
+        'glycemic_variability_index': safe_get_value(stats.get_glycemic_variability_index, dexcom),
+        'estimated_a1c': safe_get_value(stats.get_estimated_a1c, dexcom),
+        'time_in_range_percentage': safe_get_value(lambda: stats.time_in_range_percentage)  # Assuming this is a direct variable
     }
 
     # Render template with glucose data
-    return render_template("index.html", **glucose_data)
+    return render_template('index.html', **glucose_data)
 
 # def index():
 #     # Get current glucose data
