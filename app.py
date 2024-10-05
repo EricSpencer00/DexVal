@@ -10,31 +10,6 @@ app = Flask(__name__,
             static_folder="DexcomAPI/static")
 app.secret_key = defs.get_secret_key()
 
-# Load environment variables for Auth0
-AUTH0_CLIENT_ID = os.getenv('AUTH0_CLIENT_ID')
-AUTH0_CLIENT_SECRET = os.getenv('AUTH0_CLIENT_SECRET')
-AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
-AUTH0_CALLBACK_URL = os.getenv('AUTH0_CALLBACK_URL')
-
-# Define Auth0 URLs
-AUTH0_BASE_URL = f'https://{AUTH0_DOMAIN}'
-AUTH0_ACCESS_TOKEN_URL = f'https://{AUTH0_DOMAIN}/oauth/token'
-AUTH0_AUTHORIZE_URL = f'https://{AUTH0_DOMAIN}/authorize'
-
-oauth = OAuth(app)
-
-auth0 = oauth.register(
-    'auth0',
-    client_id=AUTH0_CLIENT_ID,
-    client_secret=AUTH0_CLIENT_SECRET,
-    api_base_url=AUTH0_BASE_URL,
-    access_token_url=AUTH0_ACCESS_TOKEN_URL,
-    authorize_url=AUTH0_AUTHORIZE_URL,
-    client_kwargs={
-        'scope': 'openid profile email',
-    },
-)
-
 # Initialize Dexcom object with appropriate credentials
 dexcom = defs.get_dexcom_connection()
 
@@ -71,10 +46,6 @@ def index():
     # Render template with glucose data
     return render_template('index.html', **glucose_data)
 
-@app.route('/login')
-def login():
-    return auth0.authorize_redirect(redirect_uri=url_for('auth_callback', _external=True))
-
 @app.route('/update_global_mdgl_range', methods=['POST'])
 def update_mdgl():
     data = request.json
@@ -88,14 +59,6 @@ def update_mmol():
     stats.high_mmol = data['high_mmol']
     stats.low_mmol = data['low_mmol']
     return jsonify({"message": "mmol value(s) updated successfully"}), 200
-
-@app.route('/callback')
-def auth_callback():
-    token = auth0.authorize_access_token()  # Get token using Authlib
-    session['auth_token'] = token
-    userinfo = auth0.get('userinfo')
-    session['profile'] = userinfo.json()
-    return redirect('/')
 
 # Dexcom sign-in route
 @app.route('/dexcom-signin')
