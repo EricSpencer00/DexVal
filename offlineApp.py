@@ -148,7 +148,8 @@ def auth_callback():
 @app.route('/dexcom-signin')
 def dexcom_signin():
     dexcom_client_id = os.getenv('DEXCOM_CLIENT_ID')
-    redirect_uri = url_for('dexcom_callback', _external=True)
+    # redirect_uri = url_for('dexcom_callback', _external=True)
+    redirect_uri = os.getenv('DEXCOM_REDIRECT_URI')
     return redirect(f'https://api.dexcom.com/v2/oauth2/login?client_id={dexcom_client_id}&redirect_uri={redirect_uri}&response_type=code&scope=offline_access')
 
 # Dexcom callback route
@@ -162,9 +163,9 @@ def dexcom_callback():
     payload = {
         "grant_type": "authorization_code",
         "code": auth_code,
-        "redirect_uri": url_for('dexcom_callback', _external=True),
+        "redirect_uri": "http://localhost:5001/dexcom-callback",
         "client_id": dexcom_client_id,
-        "client_secret": dexcom_client_secret
+        "client_secret": dexcom_client_secret,
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
