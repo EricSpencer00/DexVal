@@ -158,7 +158,7 @@ def dexcom_callback():
     dexcom_client_secret = os.getenv('DEXCOM_CLIENT_SECRET')
     auth_code = request.args.get('code')
     
-    url = "https://api.dexcom.com/v2/oauth2/token"
+    dexcom_token_url = "https://api.dexcom.com/v2/oauth2/token"
     payload = {
         "grant_type": "authorization_code",
         "code": auth_code,
@@ -168,7 +168,7 @@ def dexcom_callback():
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-    response = requests.post(url, data=payload, headers=headers)
+    response = requests.post(dexcom_token_url, data=payload, headers=headers)
     if response.status_code == 200:
         session['dexcom_token'] = response.json()['access_token']
         return redirect('/')
