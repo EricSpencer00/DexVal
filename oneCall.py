@@ -1,9 +1,12 @@
 from flask import Flask, redirect, render_template, request, jsonify, session, url_for
 import requests
 import os
+import secrets
 
 app = Flask(__name__, template_folder="DexcomAPI/templates", static_folder="DexcomAPI/static")
-app.secret_key = os.getenv('SECRET_KEY')  # Store this securely
+app.secret_key = os.getenv('SECRET_KEY')
+state = secrets.token_urlsafe(16)
+session['oauth_state'] = state
 
 # Dexcom OAuth client ID and secret
 DEXCOM_CLIENT_ID = os.getenv('DEXCOM_CLIENT_ID')
@@ -58,36 +61,47 @@ def login():
 # Dexcom sign-in route (Starts the OAuth process)
 @app.route('/dexcom-signin')
 def dexcom_signin():
+    # dexcom_login_url = (
+    #     f"https://api.dexcom.com/v2/oauth2/login?"
+    #     f"client_id={DEXCOM_CLIENT_ID}&redirect_uri={DEXCOM_REDIRECT_URI}&"
+    #     f"response_type=code&scope=offline_access"
+    # )
     dexcom_login_url = (
-        f"https://api.dexcom.com/v2/oauth2/login?"
-        f"client_id={DEXCOM_CLIENT_ID}&redirect_uri={DEXCOM_REDIRECT_URI}&"
-        f"response_type=code&scope=offline_access"
+        f"https://api.dexcom.com/v2/oauth2/login?client_id={DEXCOM_CLIENT_ID}"
+        f"&redirect_uri={DEXCOM_REDIRECT_URI}&response_type=code&scope=offline_access&state={state}"
     )
     return redirect(dexcom_login_url)
 
 # Dexcom callback route (Handle the OAuth callback)
 @app.route('/dexcom-callback')
 def dexcom_callback():
+    dexcom_client_id = os.getenv('DEXCOM_CLIENT_ID')
+    dexcom_client_secret = os.getenv('DEXCOM_CLIENT_SECRET')
     auth_code = request.args.get('code')
     
     dexcom_token_url = "https://api.dexcom.com/v2/oauth2/token"
     payload = {
         "grant_type": "authorization_code",
         "code": auth_code,
-        "redirect_uri": DEXCOM_REDIRECT_URI,
-        "client_id": DEXCOM_CLIENT_ID,
-        "client_secret": DEXCOM_CLIENT_SECRET,
+        "redirect_uri": "http://localhost:5001/dexcom-callback",  # Ensure this matches Dexcom settings
+        "client_id": dexcom_client_id,
+        "client_secret": dexcom_client_secret,
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-    response = requests.post(dexcom_token_url, data=payload, headers=headers)
-    if response.status_code == 200:
-        session['dexcom_token'] = response.json()['access_token']  # Store token in session
-        return redirect('/')  # Redirect to index to show glucose data
-    else:
-        return f"Error: {response.status_code} - {response.text}"
+    # Debug: Print the payload and endpoint URL
+    print("Sending POST request to Dexcom for token exchange:")
+    print(f"URL: {dexcom_token_url}")
+    print(f"Payload: {payload}")
 
-# --- Run the App ---
+    response = requests.post(dexcom_token_url, data=payload, headers=headers)
+    
+    if response.status_code == 200:
+        session['dexcom_token'] = response.json()['access_token']
+        return redirect('/show-dexcom-data')
+    else:
+        print(f"Error: {response.status_code} - {response.text}")
+        return f"Error: {response.status_code} - {response.text}"
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
