@@ -83,7 +83,7 @@ def dexcom_callback():
     payload = {
         "grant_type": "authorization_code",
         "code": auth_code,
-        "redirect_uri": "http://localhost:5001/dexcom-callback",  # Ensure this matches Dexcom settings
+        "redirect_uri": "http://localhost:5001/dexcom-callback", # Dexcom Developer Settings
         "client_id": dexcom_client_id,
         "client_secret": dexcom_client_secret,
     }
