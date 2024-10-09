@@ -93,28 +93,60 @@
         <div class="button-container">
             <button class="toggle-button" onclick="toggleUnits()">Switch to mmol/L</button>
         </div>
+        <div class="range-form">
+            <form id="range-form">
+                <label id="low-label" for="low_value">Low (mg/dL):</label>
+                <input type="number" id="low_value" name="low_value" step="0.1" required>
+        
+                <label id="high-label" for="high_value">High (mg/dL):</label>
+                <input type="number" id="high_value" name="high_value" step="0.1" required>
+        
+                <button type="submit" class="auth-button">Update Range</button>
+            </form>
+        </div>
     </div>
 
     <script>
+        let currentUnit = 'mgdl';
+
+        document.getElementById('range-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const lowValue = document.getElementById('low_value').value;
+            const highValue = document.getElementById('high_value').value;
+
+            const endpoint = currentUnit === 'mgdl' ? '/update_global_mdgl_range' : '/update_global_mmol_range';
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    low: lowValue,
+                    high: highValue
+                })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Error:', error));
+        });
+
         function toggleUnits() {
-            var mgdlElements = document.querySelectorAll('.mgdl');
-            var mmolElements = document.querySelectorAll('.mmol');
-            var button = document.querySelector('.toggle-button');
+        const unitToggle = document.getElementById('unitToggle');
+        currentUnit = unitToggle.value;
 
-            mgdlElements.forEach(function(element) {
-                element.style.display = element.style.display === 'none' ? '' : 'none';
-            });
+        const lowLabel = document.getElementById('low-label');
+        const highLabel = document.getElementById('high-label');
 
-            mmolElements.forEach(function(element) {
-                element.style.display = element.style.display === 'none' ? '' : 'none';
-            });
-
-            if (button.innerText === 'Switch to mmol/L') {
-                button.innerText = 'Switch to mg/dL';
-            } else {
-                button.innerText = 'Switch to mmol/L';
-            }
+        if (currentUnit === 'mgdl') {
+            lowLabel.textContent = 'Low (mg/dL):';
+            highLabel.textContent = 'High (mg/dL):';
+        } else {
+            lowLabel.textContent = 'Low (mmol/L):';
+            highLabel.textContent = 'High (mmol/L):';
         }
+    }
     </script>
 </body>
 </html>
