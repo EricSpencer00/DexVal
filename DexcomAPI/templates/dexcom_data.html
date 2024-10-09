@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dexcom Data</title>
+</head>
+<body>
+    <h1>Your Dexcom Data</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Glucose Value (mg/dL)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in glucose_data['egvs'] %}
+            <tr>
+                <td>{{ record['systemTime'] }}</td>
+                <td>{{ record['value'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
