@@ -144,4 +144,18 @@ def get_secret_key():
     APP_SECRET_KEY = os.urandom(24).hex()
     return APP_SECRET_KEY
 
+def get_low_mgdl():
+    """Return the low glucose threshold in mg/dL"""
+    return 70
 
+def get_high_mgdl():
+    """Return the high glucose threshold in mg/dL"""
+    return 180
+
+def get_low_mmol():
+    """Return the low glucose threshold in mmol/L"""
+    return round(get_low_mgdl() / 18.01559, 4)
+
+def get_high_mmol():
+    """Return the high glucose threshold in mmol/L"""
+    return round(get_high_mgdl() / 18.01559, 4)

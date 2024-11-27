@@ -1,5 +1,6 @@
 import logging
 import statistics
+import defs
 
 def fetch_glucose_data(dexcom):
     """
@@ -36,7 +37,7 @@ def process_glucose_data(current_reading, glucose_readings):
         "min_mmol": round(min(glucose_values) / 18.01559, 4),
         "max_mgdl": max(glucose_values),
         "max_mmol": round(max(glucose_values) / 18.01559, 4),
-        "time_in_range": round(len([g for g in glucose_values if low_mgdl <= g <= high_mgdl]) / len(glucose_values) * 100, 4),
+        "time_in_range": round(len([g for g in glucose_values if defs.get_low_mgdl <= g <= defs.get_high_mgdl]) / len(glucose_values) * 100, 4),
         "glucose_range_mgdl": round(max(glucose_values) - min(glucose_values), 4),
         "glucose_range_mmol": round((max(glucose_values) - min(glucose_values)) / 18.01559, 4),
     }
