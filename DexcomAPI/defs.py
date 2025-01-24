@@ -159,3 +159,21 @@ def get_low_mmol():
 def get_high_mmol():
     """Return the high glucose threshold in mmol/L"""
     return round(get_high_mgdl() / 18.01559, 4)
+
+def set_range(units, low, high):
+    """
+    Set the low and high glucose thresholds.
+
+    Parameters:
+    units (str): The units of the glucose thresholds ("mgdl" or "mmol").
+    low (int): The low glucose threshold.
+    high (int): The high glucose threshold.
+    """
+    global get_low_mgdl, get_high_mgdl
+    if units == "mgdl":
+        get_low_mgdl = lambda: low
+        get_high_mgdl = lambda: high
+    elif units == "mmol":
+        get_low_mgdl = lambda: round(low * 18.01559, 4)
+        get_high_mgdl = lambda: round(high * 18.01559, 4)
+    return
