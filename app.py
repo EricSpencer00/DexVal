@@ -1,4 +1,5 @@
 from flask import Flask, redirect, render_template, request, jsonify, session, url_for
+from flask_caching import Cache
 from DexcomAPI import defs, stat_functions as stats
 import requests
 from authlib.integrations.flask_client import OAuth
@@ -8,6 +9,14 @@ import os
 app = Flask(__name__, 
             template_folder="DexcomAPI/templates", 
             static_folder="DexcomAPI/static")
+app.config["CACHE_TYPE"] = "SimpleCache"  # Use SimpleCache for in-memory caching
+app.config["CACHE_DEFAULT_TIMEOUT"] = 300  # Cache data for 5 minutes
+cache = Cache(app)
+
+@cache.memoize()
+def get_cached_glucose_metrics(dexcom):
+    return stats.get_glucose_metrics(dexcom)
+
 app.secret_key = defs.get_secret_key()
 
 # Initialize Dexcom object with appropriate credentials
@@ -19,32 +28,8 @@ def safe_get_value(func, *args):
 
 @app.route('/')
 def index():
-    # Dictionary to store glucose data
-    glucose_data = {
-        'current_glucose_mgdl': safe_get_value(stats.get_current_value_mdgl, dexcom),
-        'current_glucose_mmol': safe_get_value(stats.get_current_value_mmol, dexcom),
-        'glucose_state_mdgl': safe_get_value(stats.get_glucose_state_mdgl, dexcom),
-        'glucose_state_mmol': safe_get_value(stats.get_glucose_state_mmol, dexcom),
-        'average_glucose_mgdl': safe_get_value(stats.get_average_glucose_mgdl, dexcom),
-        'average_glucose_mmol': safe_get_value(stats.get_average_glucose_mmol, dexcom),
-        'median_glucose_mgdl': safe_get_value(stats.get_median_glucose_mgdl, dexcom),
-        'median_glucose_mmol': safe_get_value(stats.get_median_glucose_mmol, dexcom),
-        'stdev_glucose_mgdl': safe_get_value(stats.get_stdev_glucose_mgdl, dexcom),
-        'stdev_glucose_mmol': safe_get_value(stats.get_stdev_glucose_mmol, dexcom),
-        'min_glucose_mgdl': safe_get_value(stats.get_min_glucose_mgdl, dexcom),
-        'min_glucose_mmol': safe_get_value(stats.get_min_glucose_mmol, dexcom),
-        'max_glucose_mgdl': safe_get_value(stats.get_max_glucose_mgdl, dexcom),
-        'max_glucose_mmol': safe_get_value(stats.get_max_glucose_mmol, dexcom),
-        'glucose_range_mgdl': safe_get_value(stats.get_glucose_range_mgdl, dexcom),
-        'glucose_range_mmol': safe_get_value(stats.get_glucose_range_mmol, dexcom),
-        'coef_variation_percentage': safe_get_value(stats.get_coef_variation_percentage, dexcom),
-        'glycemic_variability_index': safe_get_value(stats.get_glycemic_variability_index, dexcom),
-        'estimated_a1c': safe_get_value(stats.get_estimated_a1c, dexcom),
-        'time_in_range_percentage': safe_get_value(lambda: stats.time_in_range_percentage)  # Assuming this is a direct variable
-    }
-
-    # Render template with glucose data
-    return render_template('index.html', **glucose_data)
+    # Redirect to /show-dexcom-data to handle all glucose data logic
+    return redirect('/show-dexcom-data')
 
 @app.route('/update_global_mdgl_range', methods=['POST'])
 def update_mdgl():
@@ -65,7 +50,7 @@ def update_mmol():
 def dexcom_signin():
     dexcom_client_id = os.getenv('DEXCOM_CLIENT_ID')
     redirect_uri = os.getenv('DEXCOM_REDIRECT_URI')
-    dexcom_login_url = f"https://api.dexcom.com/v2/oauth2/login?client_id={dexcom_client_id}&redirect_uri={redirect_uri}&response_type=code&scope=offline_access"
+    dexcom_login_url = f"https://sandbox-api.dexcom.com/v2/oauth2/login?client_id={dexcom_client_id}&redirect_uri={redirect_uri}&response_type=code&scope=offline_access"
     return redirect(dexcom_login_url)
 
 # Dexcom callback route
@@ -75,7 +60,7 @@ def dexcom_callback():
     dexcom_client_secret = os.getenv('DEXCOM_CLIENT_SECRET')
     auth_code = request.args.get('code')
     
-    dexcom_token_url = "https://api.dexcom.com/v2/oauth2/token"
+    dexcom_token_url = "https://sandbox-api.dexcom.com/v2/oauth2/token"
     payload = {
         "grant_type": "authorization_code",
         "code": auth_code,
@@ -95,29 +80,32 @@ def dexcom_callback():
     
 @app.route('/show-dexcom-data')
 def show_dexcom_data():
+    # Check if the user is authenticated
     access_token = session.get('dexcom_token')
-    
     if not access_token:
-        return redirect('/dexcom-signin')  # If no token is found, redirect to login
-    
-    dexcom_api_url = "https://api.dexcom.com/v2/users/self/egvs"
-    
+        return redirect('/dexcom-signin')  # Redirect to sign-in if no token
+
+    # Define the Dexcom API URL and headers
+    dexcom_api_url = "https://sandbox-api.dexcom.com/v2/users/self/egvs"
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"
     }
-    
     params = {
         "startDate": "2023-10-01T00:00:00",  # Adjust start/end dates as needed
         "endDate": "2023-10-05T00:00:00"
     }
 
+    # Make the API request
     response = requests.get(dexcom_api_url, headers=headers, params=params)
-    
     if response.status_code == 200:
-        glucose_data = response.json()
-        # You can now process and display the glucose data as needed
-        return render_template('dexcom_data.html', glucose_data=glucose_data)
+        # Fetch and process glucose data in one place
+        glucose_data = stats.get_glucose_metrics(dexcom)
+        if not glucose_data:
+            return "Failed to retrieve glucose metrics."
+
+        # Render the data on the template
+        return render_template('index.html', **glucose_data)
     else:
         return f"Error: {response.status_code} - {response.text}"
 

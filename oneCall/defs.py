@@ -8,6 +8,11 @@ from dataclasses import dataclass
 
 load_dotenv()
 
+get_low_mgdl = 70
+get_high_mgdl = 180
+get_low_mmol = round(get_low_mgdl / 18.01559, 4)
+get_high_mmol = round(get_high_mgdl / 18.01559, 4)
+
 # Custom Exceptions
 class DexcomConnectionError(Exception):
     pass
@@ -58,8 +63,6 @@ def get_dexcom_connection():
         raise DexcomConnectionError("Dexcom username and password must be set as environment variables.")
     
     try:
-        # token = get_access_token()  # Assuming this function gets the token for you
-        # return Dexcom(token)
         return Dexcom(username=config.dexcom_username, password=config.dexcom_password)
     except Exception as e:
         raise DexcomConnectionError(f"Failed to connect to Dexcom: {e}")
@@ -162,18 +165,39 @@ def get_high_mmol():
 
 def set_range(units, low, high):
     """
-    Set the low and high glucose thresholds.
+    Set the low and high glucose thresholds in one unit, 
+    and automatically update the corresponding values in the other unit.
 
     Parameters:
     units (str): The units of the glucose thresholds ("mgdl" or "mmol").
-    low (int): The low glucose threshold.
-    high (int): The high glucose threshold.
+    low (float): The low glucose threshold.
+    high (float): The high glucose threshold.
     """
-    global get_low_mgdl, get_high_mgdl
+    global get_low_mgdl, get_high_mgdl, get_low_mmol, get_high_mmol
+
+    # Default values
+    if low is None and units == "mgdl":
+        low = 70
+    if high is None and units == "mgdl":
+        high = 180
+    if low is None and units == "mmol":
+        low = round(70 / 18.01559, 4)
+    if high is None and units == "mmol":
+        high = round(180 / 18.01559, 4)
+
+    # Update thresholds based on the units
     if units == "mgdl":
         get_low_mgdl = lambda: low
         get_high_mgdl = lambda: high
+        get_low_mmol = lambda: round(low / 18.01559, 4)
+        get_high_mmol = lambda: round(high / 18.01559, 4)
     elif units == "mmol":
+        get_low_mmol = lambda: low
+        get_high_mmol = lambda: high
         get_low_mgdl = lambda: round(low * 18.01559, 4)
         get_high_mgdl = lambda: round(high * 18.01559, 4)
-    return
+    else:
+        raise ValueError("Invalid units. Must be 'mgdl' or 'mmol'.")
+
+    print(f"Low: {get_low_mgdl()} mg/dL, {get_low_mmol()} mmol/L")
+    print(f"High: {get_high_mgdl()} mg/dL, {get_high_mmol()} mmol/L")
