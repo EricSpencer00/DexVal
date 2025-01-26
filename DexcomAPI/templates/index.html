@@ -8,12 +8,13 @@
 </head>
 <body>
     <div class="container">
+        {% if not session.get('dexcom_token') %}
         <div class="button-container">
             <a href="/dexcom-signin">
-                <button class="auth-button">Sign In</button> <!-- Separate class for Auth button -->
-                <!-- Also, need to make sure user is auth before showing this page, bc data will fail otherwise -->
+                <button class="auth-button">Sign In</button>
             </a>
         </div>
+        {% endif %}
         <h1>DexVal</h1>
         <div class="stat mgdl">
             <div class="label">Current Glucose:</div>
