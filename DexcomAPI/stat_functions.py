@@ -405,3 +405,54 @@ def generate_glucose_graph_mmol(dexcom, output_path='static/dexcom_glucose_graph
     plt.ylabel('Glucose Level (mmol/L)')
     plt.xticks(rotation=45)
     plt.tight_layout()
+
+def get_glucose_data(dexcom):
+    """Fetch glucose readings once and calculate metrics."""
+    try:
+        # Fetch glucose readings (bulk fetch)
+        glucose_readings = dexcom.get_glucose_readings(minutes=1440, max_count=288)
+        glucose_values = [reading.value for reading in glucose_readings]
+
+        # Return data and precomputed metrics
+        return {
+            "readings": glucose_readings,
+            "values": glucose_values,
+            "average_mgdl": round(statistics.mean(glucose_values), 4),
+            "median_mgdl": round(statistics.median(glucose_values), 4),
+            "stdev_mgdl": round(statistics.stdev(glucose_values), 4) if len(glucose_values) > 1 else 0,
+            "min_mgdl": min(glucose_values),
+            "max_mgdl": max(glucose_values),
+            "in_range_percentage": round(
+                len([g for g in glucose_values if low_mgdl <= g <= high_mgdl]) / len(glucose_values) * 100, 4
+            ),
+        }
+    except Exception as e:
+        logging.error(f"Error fetching glucose data: {e}")
+        return None
+
+def get_glucose_metrics(dexcom):
+    """Retrieve all glucose metrics using pre-fetched data."""
+    data = get_glucose_data(dexcom)
+    if not data:
+        return None
+
+    return {
+        "current_glucose_mgdl": data["readings"][-1].value if data["readings"] else None,
+        "current_glucose_mmol": round(data["readings"][-1].value / 18.01559, 4) if data["readings"] else None,
+        "average_glucose_mgdl": data["average_mgdl"],
+        "average_glucose_mmol": round(data["average_mgdl"] / 18.01559, 4),
+        "median_glucose_mgdl": data["median_mgdl"],
+        "median_glucose_mmol": round(data["median_mgdl"] / 18.01559, 4),
+        "stdev_glucose_mgdl": data["stdev_mgdl"],
+        "stdev_glucose_mmol": round(data["stdev_mgdl"] / 18.01559, 4),
+        "min_glucose_mgdl": data["min_mgdl"],
+        "min_glucose_mmol": round(data["min_mgdl"] / 18.01559, 4),
+        "max_glucose_mgdl": data["max_mgdl"],
+        "max_glucose_mmol": round(data["max_mgdl"] / 18.01559, 4),
+        "glucose_range_mgdl": round(data["max_mgdl"] - data["min_mgdl"], 4),
+        "glucose_range_mmol": round((data["max_mgdl"] - data["min_mgdl"]) / 18.01559, 4),
+        "time_in_range_percentage": data["in_range_percentage"],
+        "coef_variation_percentage": round((data["stdev_mgdl"] / data["average_mgdl"]) * 100, 4)
+        if data["average_mgdl"] > 0
+        else None,
+    }
